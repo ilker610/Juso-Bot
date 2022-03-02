@@ -1,7 +1,9 @@
+from asyncio import wait_for
+from tabnanny import check
 import discord
 import json
 import datetime
-from discord_components import DiscordComponents, Button, ButtonStyle, component
+from discord_components import Select, SelectOption
 from discord.ext import commands
 
 with open("./settings.json", "r") as settings:
@@ -14,18 +16,45 @@ class help(commands.Cog):
 
     @commands.command(name="help")
     async def help(self,ctx): 
-        await ctx.channel.send(f"If you need help you can use `usage <command_name>` command")
-        embed = discord.Embed(color=discord.Colour.random(), title=f"{self.bot.user.name}'s commands:")
-        embed.add_field(name='Owner Only', value=f'`ping` `load` `reload`' , inline=False)
-        embed.add_field(name="Info", value=f"`botinfo` `userinfo`")
-        embed.add_field(name='Fun:', value=f'`scan` `wanted` `findthenumber`' , inline=False)
-        embed.add_field(name='Moderation:', value=f'`ban` `kick` `giverole` `removerole` `createrole`', inline=False)
-        embed.add_field(name='User', value=f'`rename` `avatar` `addrole`', inline=False)
-        
-        embed.timestamp = datetime.datetime.utcnow()
-        embed.set_author(name=ctx.author.name,icon_url=ctx.author.avatar_url)
-        await ctx.channel.send(embed=embed, components=[
-            Button(style=ButtonStyle.URL, label="🤖 İnvite me !", url="https://discord.com/api/oauth2/authorize?client_id=938506594684117042&permissions=8&scope=bot%20applications.commands")])
+        embed = discord.Embed(title=f"{self.bot.user.name}'s help menu !", description="Click on the relevant buttons to see the commands.", color=discord.Colour.darker_grey())
+        embed.set_image(url="https://cdn.discordapp.com/attachments/938513267880493162/948592718169407498/standard.gif")
+        await ctx.reply(embed=embed, mention_author=False, components=[
+                Select(custom_id="selectmenu",placeholder="Choose what you want see !", options=[
+                    SelectOption(emoji="⚜", label="Info", value="info",description="Shows Info commands"),
+                    SelectOption(emoji="⚜", label="Moderation", value="moderation",description="Shows Moderation commands"),
+                    SelectOption(emoji="⚜", label="Fun", value="fun",description="Shows Fun commands"),
+                    SelectOption(emoji="⚜", label="User", value="user",description="Shows User commands"),
+                    SelectOption(emoji="⚜", label="Support", value="support",description="Shows Support commands"),
+
+                ])
+        ])
+        e1 = discord.Embed(color=discord.Colour.random(), title=f"Info", description="`botinfo` `userinfo`")
+        e2 = discord.Embed(color=discord.Colour.random(), title=f"Moderation", description="`ban` `kick` `giverole` `removerole` `createrole`")
+        e3 = discord.Embed(color=discord.Colour.random(), title=f"Fun", description="`scan` `wanted` `findthenumber`")
+        e4 = discord.Embed(color=discord.Colour.random(), title=f"User", description="`rename` `avatar` `addrole`")
+        e5 = discord.Embed(color=discord.Colour.random(), title=f"Support", description="`support`")
+
+        event = await self.bot.wait_for("select_option", check=lambda inter: inter.user == ctx.author)
+          
+
+        label = event.values[0]
+
+        if label == "info":
+            await event.respond(embed=e1)
+            
+        elif label == "fun":
+            await event.respond(embed=e3)
+
+            
+        elif label == "moderation":
+            await event.respond(embed=e2)
+            
+        elif label == "user":
+            await event.respond(embed=e4)
+            
+            
+        elif label == "support":
+            await event.respond(embed=e5)
 
 def setup(bot):
     bot.add_cog(help(bot))
