@@ -1,17 +1,14 @@
 import discord
 import json
 import keep_alive
-import functools
-import itertools
-import math
 import random
 import youtube_dl
 import asyncio
+from discord_components import *    
 from async_timeout import timeout
 from pathlib import Path
 import os
 from discord.ext import commands
-import youtube_dl
 
 keep_alive.keep_alive()
 
@@ -24,6 +21,8 @@ intents = discord.Intents.all()
 bot = commands.Bot(command_prefix=Prefix, help_command=None, intents=intents, 
         activity=discord.Game(name=f"If you need help {Prefix}help 😉 | #stopwar 🌷"),
         status=discord.Status.idle)
+
+DiscordComponents(bot)
 
 for filename in os.listdir("./cogs"):
     if filename.endswith(".py"):
